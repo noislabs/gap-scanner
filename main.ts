@@ -4,6 +4,11 @@ import { oracleAddress, rpcEndpoint } from "./env.ts";
 import { BeaconsResponse } from "./oracle.ts";
 import { bigIntMax, bigIntMin } from "./stats.ts";
 
+function nsToSec(ns: bigint): number {
+  // truncate last 3 digits to make to make value fit in safe integer range
+  return Number(ns / BigInt(1000)) / 1000000;
+}
+
 if (import.meta.main) {
   const client = await CosmWasmClient.connect(rpcEndpoint);
 
@@ -60,8 +65,8 @@ if (import.meta.main) {
   }
 
   console.log(`Verification times processed: ${diffs.length}`);
-  console.log(`Verification time minimum: ${bigIntMin(diffs)}ns`);
-  console.log(`Verification time maximum: ${bigIntMax(diffs)}ns`);
+  console.log(`Verification time minimum: ${nsToSec(bigIntMin(diffs)).toFixed(2)}s`);
+  console.log(`Verification time maximum: ${nsToSec(bigIntMax(diffs)).toFixed(2)}s`);
   const m = new Map<string, number>();
   for (const d of diffs) {
     let slotLowEnd = null;
