@@ -4,6 +4,10 @@ import { oracleAddress, rpcEndpoint } from "./env.ts";
 import { BeaconsResponse } from "./oracle.ts";
 import { bigIntMax, bigIntMin } from "./stats.ts";
 
+function warnLog(msg: string) {
+  console.warn(`%c${msg}`, "color: orange");
+}
+
 function nsToSec(ns: bigint): number {
   // truncate last 3 digits to make to make value fit in safe integer range
   return Number(ns / BigInt(1000)) / 1000000;
@@ -52,12 +56,10 @@ if (import.meta.main) {
     // console.info(`Rounds in latest request ${rounds}`);
     for (const round of rounds) {
       const expected = pos + 1;
-      if (round == expected) {
-        // Nice!
-        pos = round;
-      } else {
-        console.warn(`Missing round ${expected}.`);
+      if (round != expected) {
+        warnLog(`Missing round ${expected}.`);
       }
+      pos += 1;
     }
     const processed = pos - beaconLow.round + 1;
     const done = 100 * (processed / count);
