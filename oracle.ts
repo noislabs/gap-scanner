@@ -8,3 +8,8 @@ export interface QueriedBeacon {
 export interface BeaconsResponse {
   readonly beacons: ReadonlyArray<QueriedBeacon>;
 }
+
+export interface ConfigResponse {
+  readonly min_round: number;
+  // ... more elements here, see contract
+}

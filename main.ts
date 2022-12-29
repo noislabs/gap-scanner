@@ -1,7 +1,7 @@
 import { CosmWasmClient } from "npm:@cosmjs/cosmwasm-stargate";
 import { timeOfRound } from "./drand.ts";
 import { oracleAddress, rpcEndpoint } from "./env.ts";
-import { BeaconsResponse } from "./oracle.ts";
+import { BeaconsResponse, ConfigResponse } from "./oracle.ts";
 import { bigIntMax, bigIntMin } from "./stats.ts";
 
 function warnLog(msg: string) {
@@ -15,6 +15,12 @@ function nsToSec(ns: bigint): number {
 
 if (import.meta.main) {
   const client = await CosmWasmClient.connect(rpcEndpoint);
+
+  const { min_round: min }: ConfigResponse = await client.queryContractSmart(
+    oracleAddress,
+    { config: {} },
+  );
+  // console.log(min);
 
   const { beacons: [beaconLow] }: BeaconsResponse = await client.queryContractSmart(
     oracleAddress,
@@ -32,7 +38,7 @@ if (import.meta.main) {
   );
   // console.log(beaconHigh);
 
-  const low = beaconLow.round;
+  const low = min; // beaconLow.round;
   const high = beaconHigh.round;
 
   const count = high - low + 1;
