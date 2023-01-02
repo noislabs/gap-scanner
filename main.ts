@@ -1,6 +1,6 @@
 import { CosmWasmClient } from "npm:@cosmjs/cosmwasm-stargate";
 import { timeOfRound } from "./drand.ts";
-import { oracleAddress, rpcEndpoint } from "./env.ts";
+import { drandAddress, rpcEndpoint } from "./env.ts";
 import { BeaconsResponse, ConfigResponse } from "./oracle.ts";
 import { bigIntMax, bigIntMin } from "./stats.ts";
 
@@ -17,13 +17,13 @@ if (import.meta.main) {
   const client = await CosmWasmClient.connect(rpcEndpoint);
 
   const { min_round: min }: ConfigResponse = await client.queryContractSmart(
-    oracleAddress,
+    drandAddress,
     { config: {} },
   );
   // console.log(min);
 
   const { beacons: [beaconLow] }: BeaconsResponse = await client.queryContractSmart(
-    oracleAddress,
+    drandAddress,
     {
       beacons_asc: { start_after: null, limit: 1 },
     },
@@ -31,7 +31,7 @@ if (import.meta.main) {
   // console.log(beaconLow);
 
   const { beacons: [beaconHigh] }: BeaconsResponse = await client.queryContractSmart(
-    oracleAddress,
+    drandAddress,
     {
       beacons_desc: { start_after: null, limit: 1 },
     },
@@ -53,7 +53,7 @@ if (import.meta.main) {
   const diffs = [lowDiff];
   while (pos < beaconHigh.round) {
     const { beacons }: BeaconsResponse = await client.queryContractSmart(
-      oracleAddress,
+      drandAddress,
       { beacons_asc: { start_after: pos, limit: 400 } },
     );
     const rounds = beacons.map((b) => b.round);
